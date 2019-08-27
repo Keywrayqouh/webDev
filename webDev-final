@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Activity</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+        crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+    <br><br>
+    <div class="row">
+        <div class="col-6">
+        </div>
+        <div class="col-6">
+            <center> <button type="button" id="add" class="btn btn-raised btn-info">Add Student</button></center>
+        </div>
+    </div>
+    <center>
+        <div class="form">
+            <div class="col-8"></div>
+            <h1>Register Here</h1>
+            <div class="col-4">
+                <div class="form_input">
+                    <label class="info">Fullname</label>
+                    <input type="text" class="form-control" id="name">
+                </div>
+                <br>
+                <div class="form_input">
+                    <label class="info">Course</label>
+                    <input type="text" class="form-control" id="course">
+                </div>
+                  <br>
+                <div class="form_input">
+                    <label class="info">Year</label>
+                    <input type="number" class="form-control" id="year">
+                </div>
+                  <br>
+                <div class="form_input">
+                    <label class="info">Email</label>
+                    <input type="email" class="form-control" id="email">
+                </div>
+                  <br>
+                <div class="form_input">
+                    <label class="info">Address</label>
+                    <input type="text" class="form-control" id="address">
+                </div>
+                  <br>
+            </div>
+            <button class="save">Save</button>
+              <button class="cancel">Cancel</button>
+        </div>
+    </center>
+        <div class="table">
+            <table>
+                <thead>
+                    <tr> <th>ID</th>
+                        
+                        <th>NAME</th>
+                        <th>COURSE</th>
+                        <th>YEAR</th>
+                        <th>EMAIL</th>
+                        <th>ADDRESS</th>
+                         <th>ACTION</th>
+                        
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+<script>
+$(document).ready(function () {
+           hideForm();
+           var update = false;
+
+           var id = 0;
+           var current_row = null;
+
+           function hideForm() {
+               $(".form").hide();
+               $("#add").show();
+               $(".table").show();
+           }
+
+           function showForm(name , course ,year ,email ,address) {
+           	$("#name").val(name);
+           	$("#course").val(course);
+           	$("#year").val(year);
+           	$("#email").val(email);
+           	$("#address").val(address);
+               $(".form").show();
+               $("#add").hide();
+               $(".table").hide();
+
+           }
+           $("#add").click(function () {
+               $("#add").hide();
+               showForm()
+           })
+           $(".cancel").click(function () {
+              
+               hideForm()
+           })
+           $("#cancel").click(function () {
+               $(".form").hide();
+               $(".table").show();
+               $("#add").show();
+           })
+
+
+           $(".save").click(function () {
+               $("#add").hide();
+               var name = $("#name").val();
+               var course = $("#course").val();
+               var year = $("#year").val();
+               var email = $("#email").val();
+               var address = $("#address").val();
+               var pattern = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i
+
+               var attributes = ["name", "course", "year", "email", "address"];
+               if (name == "" || course == "" || year == "" || email == "" || address == "") {
+                   alert("All inputs must be filled! Thank you!")
+               } else if (!pattern.test(email)) {
+                   alert("Please enter a valid email!")
+               }
+               else {
+                   var rows = $("<tr>", {
+                       id: ++id,
+                       name: name,
+                       course: course,
+                       year: year,
+                       email: email,
+                       address: address
+                   });
+                   var button = $('<button>', {
+                       class: "edit",
+                       id: id
+                   });
+                   var button2 = $('<button>', {
+                       class: "delete",
+                       id: id
+
+                   }).css("margin-left", "10px");
+
+                   var col = $('<td>').text($(rows).attr("id")).appendTo($(rows));
+                   var col1 = $('<td>').text($(rows).attr("name")).appendTo($(rows));
+                   var col2 = $('<td>').text($(rows).attr("course")).appendTo($(rows));
+                   var col3 = $('<td>').text($(rows).attr("year")).appendTo($(rows));
+                    var col4 = $('<td>').text($(rows).attr("email")).appendTo($(rows));
+                   var col5 = $('<td>').text($(rows).attr("address")).appendTo($(rows));
+                   var btns = $("<div>").append($(button).text("EDIT").hide())
+                   $(btns).append($(button2).text("DELETE").hide())
+                   var col4 = $('<td>').append(btns).appendTo($(rows));
+
+                   if (!update) {
+                       $("tbody").append(rows)
+                   } else {
+                       $(rows).attr("id", $(current_row).attr("id"))
+                       $(current_row).html($(rows).html())
+                   }
+
+                   $("input").val(null);
+                   hideForm();
+
+                   $(".delete").click(function () {
+                       $(this).parents("tr").remove();
+                   });
+                   $(document).on("mouseenter", "tbody tr", function () {
+                       $(this).closest($(".delete").show())
+                   });
+
+                   $(document).on("mouseleave", "tbody tr", function () {
+                       $(this).closest($(".delete").hide())
+                   });
+                   $(document).on("mouseenter", "tbody tr", function () {
+                       $(this).closest($(".edit").show())
+                   });
+
+                   $(document).on("mouseleave", "tbody tr", function () {
+                       $(this).closest($(".edit").hide())
+                   });
+                   $(".edit").click(function () {
+                       --id;
+                       update = true;
+                       current_row = $(this).closest("tr");
+                       showForm($(this).closest("tr").attr("name"),$(this).closest("tr").attr("course"),$(this).closest("tr").attr("year"),$(this).closest("tr").attr("email"),$(this).closest("tr").attr("address"));
+                   });
+
+               }
+           })
+
+       })
+
+</script>
+</body>
+</html>
